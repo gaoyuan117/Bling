@@ -100,12 +100,18 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
         adapter = new AvDetailAdapter(R.layout.item_av_detail, list);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
-        video();
         ad();
-        getFreeNum();
         videoImg.setOnClickListener(v -> toActivity());
         findViewById(R.id.close).setOnClickListener(v -> layoutTips.setVisibility(View.GONE));
         imgAd.setOnClickListener(v -> toBrower());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        video();
+        getFreeNum();
+
     }
 
     @Override
@@ -114,6 +120,7 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
         intent.putExtra("title", list.get(position).getTitle());
         intent.putExtra("id", list.get(position).getId());
         startActivity(intent);
+        finish();
     }
 
     private void video() {
@@ -124,6 +131,8 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
                     protected void onHandleSuccess(VideoDetailBean bean) {
                         detailBean = bean;
                         GlideUtils.glide(AvDetailActivity.this, bean.getDetails().getVideo_img(), videoImg);
+
+                        GlideUtils.glide(mContext,bean.getDetails().getVideo_img(),videoImg);
                         tvNum.setText(bean.getDetails().getWatch_num() + "");
                         tvTitle.setText(bean.getDetails().getTitle());
                         tvCount.setText(bean.getDetails().getCoin() + "");
@@ -137,7 +146,7 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
     }
 
     private void ad() {
-        RetrofitClient.getInstance().createApi().diamondAv("Home.coinneiye")
+        RetrofitClient.getInstance().createApi().diamondAv("Home.avneiye")
                 .compose(RxUtils.io_main())
                 .subscribe(new BaseObjObserver<DiamondAdBean>() {
                     @Override
@@ -182,7 +191,7 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
                 PayUtils.payDialog(AvDetailActivity.this, R.mipmap.av_pay_bg, "AV区", "新用户免费观看5部影片", 2, AppContext.avChargeList);
                 return;
             }
-            toActivity();
+            startActivity();
         }
 
     }
@@ -190,9 +199,9 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
     private void startActivity() {
         Bundle bundle = new Bundle();
         bundle.putSerializable("title", detailBean.getDetails().getTitle());
-        bundle.putSerializable("url", detailBean.getDetails().getUrl());
-        bundle.putSerializable("type", "diamond");
+        bundle.putSerializable("url", detailBean.getDetails().getVideo_url());
+        bundle.putSerializable("type", "1");
         bundle.putSerializable("id", detailBean.getDetails().getId());
-        ActivityUtils.startActivity(bundle, AvDetailActivity.class);
+        ActivityUtils.startActivity(bundle, VideoPlayActivity.class);
     }
 }

@@ -66,8 +66,7 @@
                     android:id="@+id/img_diamond"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
-                    android:scaleType="centerCrop"
-                    android:src="@color/main_color" />
+                    android:scaleType="centerCrop" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -148,8 +147,7 @@
                 android:id="@+id/img_ad"
                 android:layout_width="match_parent"
                 android:layout_height="110dp"
-                android:layout_marginTop="10dp"
-                android:src="@color/main_color" />
+                android:layout_marginTop="10dp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler"

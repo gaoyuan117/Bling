@@ -89,4 +89,5 @@ public class ConfigBean {
     public String jika;
     public String nianka;
     public String zhongshenka;
+    public String free_time;
 }

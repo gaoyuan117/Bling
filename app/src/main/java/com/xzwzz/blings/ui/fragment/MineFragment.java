@@ -3,7 +3,14 @@ package com.xzwzz.blings.ui.fragment;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.widget.TextView;
 
@@ -79,8 +86,8 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void initData() {
         UserBean loginUser = AppContext.getInstance().getLoginUser();
-        mTvId.setText("ID:" + loginUser.id);
-        mTvName.setText("昵称:" + loginUser.user_nicename);
+        mTvId.setText("会员号:" + loginUser.id);
+        mTvName.setText(loginUser.user_nicename);
         flushUserInfo();
     }
 
@@ -157,11 +164,17 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
                             mTvName.setText("昵称:" + bean.user_nicename);
 
                             mTvId.setText("ID:" + bean.id);
-                            tvDiamond.setContent(bean.coin);
+
+                            String coin = " 剩余钻石数："+bean.coin;
+                            ForegroundColorSpan span = new ForegroundColorSpan(Color.RED);
+                            SpannableString spannableString = new SpannableString(coin);
+                            spannableString.setSpan(span, 7, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            tvDiamond.setContent(spannableString);
 
                         }
                     }
                 });
     }
+
 
 }

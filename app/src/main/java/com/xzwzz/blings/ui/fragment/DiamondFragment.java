@@ -1,11 +1,8 @@
 package com.xzwzz.blings.ui.fragment;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,32 +10,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.xzwzz.blings.AppConfig;
 import com.xzwzz.blings.AppContext;
 import com.xzwzz.blings.R;
 import com.xzwzz.blings.api.http.BaseListObserver;
-import com.xzwzz.blings.api.http.HttpResult;
 import com.xzwzz.blings.api.http.RetrofitClient;
 import com.xzwzz.blings.api.http.RxUtils;
 import com.xzwzz.blings.base.BaseFragment;
+import com.xzwzz.blings.bean.AdBean;
 import com.xzwzz.blings.bean.AdListBean;
-import com.xzwzz.blings.bean.AvVideoListBean;
-import com.xzwzz.blings.bean.HotBean;
 import com.xzwzz.blings.bean.MoviesLinkListBean;
-import com.xzwzz.blings.bean.VideoListBean;
-import com.xzwzz.blings.module.video.VideoPlayActivity;
 import com.xzwzz.blings.ui.VideoDetailActivity;
 import com.xzwzz.blings.ui.adapter.DiamondAdapter;
-import com.xzwzz.blings.ui.login.LoginActivity;
-import com.xzwzz.blings.utils.LoginUtils;
-import com.xzwzz.blings.utils.MemberUtil;
 import com.xzwzz.blings.utils.MyImageLoader;
 import com.xzwzz.blings.utils.PayUtils;
 import com.xzwzz.blings.utils.StatusBarUtil;
@@ -47,23 +33,20 @@ import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerClickListener;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.functions.Consumer;
-
-public class DiamondFragment extends BaseFragment implements OnBannerClickListener, SwipeRefreshLayout.OnRefreshListener, BaseQuickAdapter.OnItemClickListener {
+public class DiamondFragment extends BaseFragment implements OnBannerClickListener, SwipeRefreshLayout.OnRefreshListener, BaseQuickAdapter.OnItemClickListener, BaseQuickAdapter.OnItemChildClickListener {
     private Toolbar mToolbar;
     private Banner mBanner;
     private List<String> bannerList = new ArrayList<>();
     private SwipeRefreshLayout refresh;
     private RecyclerView recyclerView;
-
+    private android.widget.TextView mTvTitle;
     private DiamondAdapter adapter;
     private List<MoviesLinkListBean> list = new ArrayList<>();
     private List<AdListBean> adListBean;
-
+    private LinearLayout layout;
 
     @Override
     public int getLayoutId() {
@@ -80,19 +63,23 @@ public class DiamondFragment extends BaseFragment implements OnBannerClickListen
         refresh = view.findViewById(R.id.refresh);
         mBanner.setOnBannerClickListener(this);
         StatusBarUtil.getInstance().setPaddingSmart(getActivity(), mToolbar);
-
+        mTvTitle = headView.findViewById(R.id.tv_title);
+        layout = headView.findViewById(R.id.layout);
+        headView.findViewById(R.id.img_close).setOnClickListener(v -> layout.setVisibility(View.GONE));
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         adapter = new DiamondAdapter(R.layout.item_diamond, list);
         adapter.addHeaderView(headView);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
+
+        adapter.setOnItemChildClickListener(this);
     }
 
     @Override
     public void initData() {
         getBanner();
-
+        getAd();
     }
 
     @Override
@@ -123,13 +110,29 @@ public class DiamondFragment extends BaseFragment implements OnBannerClickListen
 
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+       toActivity(position);
+    }
+
+    private void toActivity(int position){
         Intent intent = new Intent(getActivity(), VideoDetailActivity.class);
         intent.putExtra("title", list.get(position).getTitle());
         intent.putExtra("id", list.get(position).getId());
         startActivity(intent);
-
     }
 
+    //获取广告
+    private void getAd() {
+        RetrofitClient.getInstance().createApi().getAd().compose(RxUtils.io_main())
+                .subscribe(new BaseListObserver<AdBean>() {
+                    @Override
+                    protected void onHandleSuccess(List<AdBean> list) {
+                        if (list.size() > 0) {
+                            mTvTitle.setText(list.get(0).content);
+                            mTvTitle.setSelected(true);
+                        }
+                    }
+                });
+    }
 
     private void getBanner() {
         RetrofitClient.getInstance().createApi().adsList("Home.coin_adsList")
@@ -175,4 +178,37 @@ public class DiamondFragment extends BaseFragment implements OnBannerClickListen
     }
 
 
+    @Override
+    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+        noBuyDialog(position);
+    }
+
+    private void noBuyDialog(int position) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage("还未购买该视频,是否花费" + list.get(position).getCoin() + "钻石购买")
+                .setPositiveButton("购买", (dialog, which) -> {
+                    buy(position);
+                    dialog.dismiss();
+                })
+                .setNegativeButton("取消", (dialog, which) -> {
+                })
+                .show();
+    }
+
+    @SuppressLint("CheckResult")
+    private void buy(int position) {
+        RetrofitClient.getInstance().createApi().buyVideo("Home.buyvideo", AppContext.getInstance().getLoginUid(), list.get(position).getId())
+                .compose(RxUtils.io_main())
+                .subscribe(httpResult -> {
+                    if (httpResult.ret == 200) {
+                        if (httpResult.data.code == 0) {
+                            ToastUtils.showShort("购买成功");
+                            getMoviesLinkList();
+                            toActivity(position);
+                        } else {
+                            PayUtils.payDialog(getActivity(), R.mipmap.zb_pay_bg, "钻石区", "新用户免费观看5部影片", 3, AppContext.zsChargeList);
+                        }
+                    }
+                });
+    }
 }

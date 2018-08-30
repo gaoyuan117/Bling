@@ -1,10 +1,12 @@
 package com.xzwzz.blings.module.live;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.xzwzz.blings.AppConfig;
 import com.xzwzz.blings.AppContext;
 import com.xzwzz.blings.R;
+import com.xzwzz.blings.api.http.RxUtils;
 import com.xzwzz.blings.base.BaseActivity;
 import com.xzwzz.blings.bean.ChannelDataBean;
 import com.xzwzz.blings.bean.CollectBean;
@@ -23,12 +26,17 @@ import com.xzwzz.blings.bean.CollectBeanDao;
 import com.xzwzz.blings.glide.GlideApp;
 import com.xzwzz.blings.glide.GlideCircleTransform;
 import com.xzwzz.blings.ui.VipActivity;
+import com.xzwzz.blings.utils.CountDownUtils;
 import com.xzwzz.blings.utils.DialogHelp;
 import com.xzwzz.blings.utils.MemberUtil;
 import com.xzwzz.blings.utils.SpannableUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.custom.IRenderView;
@@ -38,8 +46,8 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
     private IjkVideoView ijkPlayer;
     boolean mBackPressed = false;
     private android.widget.TextView mTvLiveName;
+    private android.widget.TextView mTvLiveTime;
     private android.widget.TextView mTvLiveNum;
-    private android.widget.ImageView mIjkJubao;
     private android.widget.ImageView mIjkGuanbi;
     private android.widget.ImageView mIjkPingbi;
     private android.widget.ImageView mIvAvatar;
@@ -55,7 +63,6 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
     private CollectBeanDao collectBeanDao;
     private ImageView imgCollect;
     private boolean isCollect = false;
-
 
 
     @Override
@@ -75,13 +82,13 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
 
         mTvLiveName = findViewById(R.id.tv_live_name);
         mTvLiveNum = findViewById(R.id.tv_live_num);
-        mIjkJubao = findViewById(R.id.ijk_jubao);
         mIjkGuanbi = findViewById(R.id.ijk_guanbi);
         mIjkPingbi = findViewById(R.id.ijk_pingbi);
         mIvAvatar = findViewById(R.id.iv_avatar);
         loadingView = findViewById(R.id.loading_View);
         layout = findViewById(R.id.layout);
         tvTips = findViewById(R.id.tv_tips);
+        mTvLiveTime = findViewById(R.id.tv_time);
         imageView = findViewById(R.id.imageView);
         tvTips.setOnClickListener(this);
 
@@ -96,6 +103,44 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
         imgCollect.setOnClickListener(this);
         isCollect();
 
+
+        Log.e("gy", "免费时间：" + AppConfig.free_time);
+        if (!TextUtils.isEmpty(AppConfig.free_time) && !AppConfig.IS_MEMBER) {
+            mTvLiveTime.setVisibility(View.VISIBLE);
+            CountDownUtils count = new CountDownUtils(mTvLiveTime,"剩余观看时间：%s",Integer.valueOf(AppConfig.free_time));
+            count.start();
+            count.setCountdownListener(new CountDownUtils.CountdownListener() {
+                @Override
+                public void onStartCount() {
+
+                }
+
+                @Override
+                public void onFinishCount() {
+                    mTvLiveTime.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onUpdateCount(int currentRemainingSeconds) {
+                    mTvLiveTime.setText("剩余观看时间："+currentRemainingSeconds+"s");
+                }
+            });
+            startDownTime();
+        }
+
+
+    }
+
+    @SuppressLint("CheckResult")
+    private void startDownTime() {
+        Observable.timer(Integer.valueOf(AppConfig.free_time), TimeUnit.SECONDS)
+                .compose(RxUtils.io_main())
+                .subscribe(aLong -> isMember());
+    }
+
+    private void isMember() {
+        setResult(RESULT_OK);
+        finish();
     }
 
     @Override
@@ -130,7 +175,6 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void setListener() {
         mIjkGuanbi.setOnClickListener(this);
-        mIjkJubao.setOnClickListener(this);
         mIjkPingbi.setOnClickListener(this);
     }
 
@@ -174,9 +218,7 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ijk_jubao:
-                DialogHelp.getConfirmDialog(this, "是否举报该主播?", (dialog, which) -> finish()).show();
-                break;
+
             case R.id.ijk_guanbi:
                 onBackPressed();
                 break;
@@ -187,16 +229,7 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
                 toBrower(textSplit[1]);
                 break;
             case R.id.ijk_pingbi:
-                if (mIjkJubao.getVisibility() == View.VISIBLE || mIjkGuanbi.getVisibility() == View.VISIBLE) {
-                    mIjkJubao.setVisibility(View.GONE);
-                    mIjkGuanbi.setVisibility(View.GONE);
-                    layout.setVisibility(View.INVISIBLE);
 
-                } else if (mIjkJubao.getVisibility() == View.GONE || mIjkGuanbi.getVisibility() == View.GONE) {
-                    mIjkJubao.setVisibility(View.VISIBLE);
-                    mIjkGuanbi.setVisibility(View.VISIBLE);
-                    layout.setVisibility(View.VISIBLE);
-                }
                 break;
 
             case R.id.img_collect://搜藏
@@ -206,7 +239,6 @@ public class LivePlayActivity extends BaseActivity implements View.OnClickListen
                     collectBean.setName(bean.getName());
                     collectBean.setNum(bean.getNum());
                     collectBean.setUrl(bean.getUrl());
-                    collectBean.setId(bean.getUid());
                     collectBeanDao.insertOrReplace(collectBean);
                     ToastUtils.showShort("收藏成功");
                     imgCollect.setImageResource(R.mipmap.collect);

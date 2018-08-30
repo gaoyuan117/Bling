@@ -87,6 +87,10 @@ public class PayUtils {
                 .compose(RxUtils.io_main())
                 .subscribe(payBean -> {
                     dialog.dismiss();
+                    if (payBean.getData().getCode() != 0) {
+                        ToastUtils.showShort(payBean.getData().getMsg());
+                        return;
+                    }
                     try {
                         String pay_url = payBean.getData().getInfo().getPay_url();
                         if (!TextUtils.isEmpty(pay_url)) {

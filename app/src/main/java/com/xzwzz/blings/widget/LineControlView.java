@@ -3,6 +3,7 @@ package com.xzwzz.blings.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.text.SpannableString;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -131,6 +132,10 @@ public class LineControlView extends LinearLayout {
     public void setContent(String content) {
         this.content = content;
         contentView.setText(this.content);
+    }
+    public void setContent(SpannableString content) {
+        this.content = content.toString();
+        contentView.setText(content);
     }
 
     public void setIconRes(int iconRes) {

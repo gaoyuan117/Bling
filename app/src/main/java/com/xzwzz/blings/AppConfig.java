@@ -17,7 +17,7 @@ import java.util.Properties;
  */
 public class AppConfig {
 
-    public static final String INVITE_CODE = "11111";//内置邀请码
+    public static  String INVITE_CODE = "";//内置邀请码
 
     public static final String MAIN_URL = "http://bling.8eym3.cn/";
 //        public static final String MAIN_URL = "http://yybs88.com/";
@@ -62,6 +62,7 @@ public class AppConfig {
     public static String jika;
     public static String nianka;
     public static String zhongshenka;
+    public static String free_time;
 
     public static String GLOBAL_WX_KEY = "";//微信KEY
     public static String TICK_NAME = ""; //魅力值昵称

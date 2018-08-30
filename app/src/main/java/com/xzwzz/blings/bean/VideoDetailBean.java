@@ -50,12 +50,21 @@ public class VideoDetailBean {
         private String title;
         private String img_url;
         private String url;
+        private String video_url;
         private String uptime;
         private String listorder;
         private String coin;
         private String watch_num;
         private String video_img;
         private int is_buy;
+
+        public String getVideo_url() {
+            return video_url;
+        }
+
+        public void setVideo_url(String video_url) {
+            this.video_url = video_url;
+        }
 
         public String getVideo_img() {
             return video_img;

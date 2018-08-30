@@ -1,8 +1,15 @@
 package com.xzwzz.blings.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -16,9 +23,11 @@ import com.xzwzz.blings.base.BaseActivity;
 import com.xzwzz.blings.bean.ConfigBean;
 import com.xzwzz.blings.bean.MobileBean;
 import com.xzwzz.blings.bean.NovelTermBean;
+import com.xzwzz.blings.bean.PayDialogBean;
 import com.xzwzz.blings.bean.QqBean;
 import com.xzwzz.blings.bean.UserBean;
 import com.xzwzz.blings.glide.GlideApp;
+import com.xzwzz.blings.ui.adapter.DiamondPayAdapter;
 import com.xzwzz.blings.ui.login.LoginActivity;
 import com.xzwzz.blings.utils.LoginUtils;
 import com.xzwzz.blings.utils.SharePrefUtil;
@@ -28,6 +37,8 @@ import java.util.List;
 import io.reactivex.functions.Consumer;
 
 public class SplashActivity extends BaseActivity {
+
+    private Dialog dialog;
 
     @Override
     protected boolean hasActionBar() {
@@ -115,33 +126,25 @@ public class SplashActivity extends BaseActivity {
                             }
 
                             SharePrefUtil.putInt("type", bean.channl_type);
-
-
                             AppContext.text = bean.keyword;
-
                             AppConfig.APP_ANDROID_SHARE = bean.app_android;
-
                             AppConfig.SHARE_TITLE = bean.share_title;
                             AppConfig.SHARE_DES = bean.share_des;
-
                             AppConfig.MAINTAIN_SWITCC = Integer.parseInt(bean.maintain_switch);
                             AppConfig.apk_ver = bean.apk_ver;
                             AppConfig.apk_url = bean.apk_url;
                             AppConfig.maintain_tips = bean.maintain_tips;
                             AppConfig.VIDEO_URL = bean.video_url;
-
                             AppConfig.vip_video_jiexi = bean.vip_video_jiexi;
                             AppConfig.jingcai_jiexi = bean.jingcai_jiexi;
                             AppConfig.video_vip_url = bean.video_vip_url;
-
                             AppConfig.pay_type = bean.pay_type;
                             AppConfig.yueka = bean.yueka;
                             AppConfig.jika = bean.jika;
                             AppConfig.nianka = bean.nianka;
                             AppConfig.zhongshenka = bean.zhongshenka;
-
+                            AppConfig.free_time = bean.free_time;
                             SharePrefUtil.putString("video_url", bean.video_url);
-
                         }
                     }
                 });
@@ -149,10 +152,10 @@ public class SplashActivity extends BaseActivity {
 
     @SuppressLint("CheckResult")
     private void login() {
-        RetrofitClient.getInstance().createApi().getIsVip("Home.mobilecode", LoginUtils.getDeviceId(this),AppConfig.INVITE_CODE).compose(RxUtils.io_main())
+        RetrofitClient.getInstance().createApi().getIsVip("Home.mobilecode", LoginUtils.getDeviceId(this), AppConfig.INVITE_CODE).compose(RxUtils.io_main())
                 .subscribe(mobileBean -> {
                     if (mobileBean.getRet() == 200) {
-                        if (mobileBean.getData().getCode()==0){
+                        if (mobileBean.getData().getCode() == 0) {
                             UserBean bean = new UserBean();
                             bean.token = LoginUtils.getDeviceId(this);
                             bean.id = mobileBean.getData().getInfo().getUid();
@@ -160,8 +163,32 @@ public class SplashActivity extends BaseActivity {
                             splah();
                             getQq();
                             getConfig();
-                        }else {
+                        } else {
                             ToastUtils.showLong(mobileBean.getData().getMsg());
+                            payDialog();
+                        }
+                    }
+                });
+    }
+
+    @SuppressLint("CheckResult")
+    private void login2() {
+        RetrofitClient.getInstance().createApi().getIsVip("Home.mobilecode", LoginUtils.getDeviceId(this), AppConfig.INVITE_CODE)
+                .compose(RxUtils.io_main())
+                .subscribe(mobileBean -> {
+                    if (mobileBean.getRet() == 200) {
+                        ToastUtils.showShort("激活中...");
+                        if (mobileBean.getData().getCode() == 0) {
+                            UserBean bean = new UserBean();
+                            bean.token = LoginUtils.getDeviceId(this);
+                            bean.id = mobileBean.getData().getInfo().getUid();
+                            AppContext.getInstance().saveUserInfo(bean);
+                            splah();
+                            getQq();
+                            getConfig();
+                        } else {
+                            ToastUtils.showLong(mobileBean.getData().getMsg());
+                            payDialog();
                         }
                     }
                 });
@@ -180,6 +207,30 @@ public class SplashActivity extends BaseActivity {
                 });
     }
 
+
+    public void payDialog() {
+        View view = View.inflate(this, R.layout.dialog_code, null);
+        EditText etCode = view.findViewById(R.id.et_code);
+        dialog = new Dialog(this, R.style.wx_dialog);
+        dialog.setContentView(view);
+        dialog.setCancelable(false);
+        dialog.show();
+
+        view.findViewById(R.id.tv_buy).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = etCode.getText().toString();
+                if (TextUtils.isEmpty(s)) {
+                    ToastUtils.showShort("请输入激活码");
+                    return;
+                }
+                dialog.dismiss();
+                AppConfig.INVITE_CODE = s;
+                login2();
+            }
+        });
+
+    }
 
 
 }

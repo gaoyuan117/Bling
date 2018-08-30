@@ -1,12 +1,15 @@
 package com.xzwzz.blings.ui;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzwzz.blings.AppContext;
 import com.xzwzz.blings.R;
@@ -46,12 +49,30 @@ public class BuyActivity extends BaseActivity implements BaseQuickAdapter.OnItem
 
         recyclerView = findViewById(R.id.recycler);
         refresh = findViewById(R.id.refresh);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                int position = parent.getChildPosition(view);
+                int offest = SizeUtils.dp2px(6f);
+                if (position % 2 == 0) {
+                    outRect.set(offest, offest, offest / 2, 0);
+                } else if (position % 2 == 1) {
+                    outRect.set(offest / 2, offest, offest / 2, 0);
+                } else if (position % 2 == 2) {
+                    outRect.set(offest / 2, offest, 0, 0);
+                }
+            }
+        });
+
         adapter = new DiamondAdapter(R.layout.item_diamond, list);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
         refresh.setOnRefreshListener(this);
         getMoviesLinkList();
+
+        adapter.setGone(true);
 
     }
 
@@ -80,7 +101,8 @@ public class BuyActivity extends BaseActivity implements BaseQuickAdapter.OnItem
         Bundle bundle = new Bundle();
         bundle.putSerializable("title", bean.getTitle());
         bundle.putSerializable("url", bean.getUrl());
-        bundle.putSerializable("type", "diamond");
+        bundle.putSerializable("type", "2");
+        bundle.putSerializable("id", bean.getId());
         ActivityUtils.startActivity(bundle, VideoPlayActivity.class);
     }
 

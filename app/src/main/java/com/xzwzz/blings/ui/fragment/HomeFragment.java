@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
@@ -62,6 +63,8 @@ public class HomeFragment extends BaseFragment implements BaseQuickAdapter.OnIte
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private View headView;
     private TextView tvNum;
+    private LinearLayout layout;
+
     private List<AdListBean> adListBeans;
 
     @Override
@@ -75,6 +78,9 @@ public class HomeFragment extends BaseFragment implements BaseQuickAdapter.OnIte
         mBanner = headView.findViewById(R.id.banner);
         mTvTitle = headView.findViewById(R.id.tv_title);
         tvNum = headView.findViewById(R.id.tv_home_num);
+        layout = headView.findViewById(R.id.layout);
+
+        headView.findViewById(R.id.img_close).setOnClickListener(v -> layout.setVisibility(View.GONE));
 
         mSwipeRefreshLayout = view.findViewById(R.id.refresh);
         mToolbar = view.findViewById(R.id.toolbar);
@@ -127,10 +133,6 @@ public class HomeFragment extends BaseFragment implements BaseQuickAdapter.OnIte
 
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-        if (!AppConfig.IS_MEMBER) {
-            PayUtils.payDialog(getActivity(), R.mipmap.zb_pay_bg, "直播区", "", 1, AppContext.zbChargeList);
-            return;
-        }
         toChannel(adapter, position);
     }
 

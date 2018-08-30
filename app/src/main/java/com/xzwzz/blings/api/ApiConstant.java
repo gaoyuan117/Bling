@@ -330,7 +330,7 @@ public interface ApiConstant {
     //service=Home.avList
     @FormUrlEncoded
     @POST("/api/public/")
-    Observable<HttpResult> addViewNum(@Field("service") String service, @Field("id") String id);
+    Observable<HttpResult> addViewNum(@Field("service") String service, @Field("id") String id, @Field("type") String type);
 
 
     @FormUrlEncoded

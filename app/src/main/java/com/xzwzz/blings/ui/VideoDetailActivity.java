@@ -1,5 +1,7 @@
 package com.xzwzz.blings.ui;
 
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -91,12 +93,17 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
         adapter = new VideoDetailAdapter(R.layout.item_video_detail, list);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(this);
-        video();
         ad();
-        getFreeNum();
         videoImg.setOnClickListener(v -> toActivity());
         findViewById(R.id.close).setOnClickListener(v -> layoutTips.setVisibility(View.GONE));
         imgAd.setOnClickListener(v -> toBrower());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        video();
+        getFreeNum();
     }
 
     @Override
@@ -106,6 +113,7 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
         intent.putExtra("title", list.get(position).getTitle());
         intent.putExtra("id", list.get(position).getId());
         startActivity(intent);
+        finish();
     }
 
     private void video() {
@@ -116,8 +124,7 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
                     @Override
                     protected void onHandleSuccess(VideoDetailBean bean) {
                         detailBean = bean;
-                        Glide.with(VideoDetailActivity.this).load(bean.getDetails().getImg_url()).into(videoImg);
-
+                        GlideUtils.glide(mContext,bean.getDetails().getImg_url(),videoImg);
                         tvNum.setText(bean.getDetails().getWatch_num() + "");
                         tvTitle.setText(bean.getDetails().getTitle());
                         tvCount.setText(bean.getDetails().getCoin() + "");
@@ -153,6 +160,7 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
         startActivity(intent);
     }
 
+    @SuppressLint("CheckResult")
     private void getFreeNum() {
         RetrofitClient.getInstance().createApi().getfreenum("Home.getfreenum", AppContext.getInstance().getLoginUid(), "2")
                 .compose(RxUtils.io_main())
@@ -188,7 +196,7 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
         Bundle bundle = new Bundle();
         bundle.putSerializable("title", detailBean.getDetails().getTitle());
         bundle.putSerializable("url", detailBean.getDetails().getUrl());
-        bundle.putSerializable("type", "diamond");
+        bundle.putSerializable("type", "2");
         bundle.putSerializable("id", detailBean.getDetails().getId());
         ActivityUtils.startActivity(bundle, VideoPlayActivity.class);
     }
@@ -196,7 +204,10 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
     private void noBuyDialog() {
         new AlertDialog.Builder(this)
                 .setMessage("还未购买该视频,是否花费" + detailBean.getDetails().getCoin() + "钻石购买")
-                .setPositiveButton("购买", (dialog, which) -> buy())
+                .setPositiveButton("购买", (dialog, which) -> {
+                    buy();
+                    dialog.dismiss();
+                })
                 .setNegativeButton("取消", (dialog, which) -> {
                 })
                 .show();
@@ -209,7 +220,7 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
                     if (httpResult.ret == 200) {
                         if (httpResult.data.code == 0) {
                             ToastUtils.showShort("购买成功");
-                            toActivity();
+                            startActivity();
                             video();
                         } else {
                             PayUtils.payDialog(VideoDetailActivity.this, R.mipmap.zb_pay_bg, "钻石区", "新用户免费观看5部影片", 3, AppContext.zsChargeList);

@@ -76,7 +76,7 @@
                 android:drawableLeft="@mipmap/vip"
                 android:drawablePadding="4dp"
                 android:gravity="center_vertical"
-                android:text="VIP到期时间"
+                android:text="直播专区会员到期时间"
                 android:textColor="#000"
                 android:textSize="14sp" />
 

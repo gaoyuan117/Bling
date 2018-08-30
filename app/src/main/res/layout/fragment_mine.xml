@@ -37,7 +37,7 @@
                 android:background="@color/white"
                 app:canNavition="true"
                 app:iconRes="@mipmap/kaitonghuiyuan"
-                app:title="开通会员" />
+                app:title="开通直播区会员" />
 
             <com.xzwzz.blings.widget.LineControlView
                 android:id="@+id/avhuiyuan"
@@ -46,7 +46,7 @@
                 android:background="@color/white"
                 app:canNavition="true"
                 app:iconRes="@mipmap/avhuiyuan"
-                app:title="AV会员" />
+                app:title="开通AV区会员" />
 
             <com.xzwzz.blings.widget.LineControlView
                 android:id="@+id/xinshou"

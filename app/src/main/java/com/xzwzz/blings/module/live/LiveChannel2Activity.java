@@ -36,6 +36,7 @@ import com.xzwzz.blings.ui.login.LoginActivity;
 import com.xzwzz.blings.utils.DialogHelp;
 import com.xzwzz.blings.utils.LoginUtils;
 import com.xzwzz.blings.utils.MemberUtil;
+import com.xzwzz.blings.utils.PayUtils;
 import com.xzwzz.blings.utils.SharePrefUtil;
 import com.xzwzz.blings.utils.StatusBarUtil;
 import com.xzwzz.blings.widget.ViewStatusManager;
@@ -142,47 +143,26 @@ public class LiveChannel2Activity extends AbsModuleActivity {
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 
         ChannelDataBean.DataBean item = (ChannelDataBean.DataBean) adapter.getItem(position);
-        toLivePlayActivity(item);
+        goRoomV1(item);
     }
 
     private void goRoomV1(ChannelDataBean.DataBean item) {
-        MemberUtil.delayCheckMember(new WeakReference<>(new MemberUtil.MemberListener() {
-            @Override
-            public void isMemeber() {
-                toLivePlayActivity(item);
-            }
-
-            @Override
-            public void noMember() {
-                dialog();
-            }
-        }));
+//        Bundle bundle = new Bundle();
+//        bundle.putSerializable("data", item);
+//        ActivityUtils.startActivity(bundle, LivePlayActivity.class);
+        Intent intent = new Intent(this,LivePlayActivity.class);
+        intent.putExtra("data",item);
+        startActivityForResult(intent,1);
     }
 
-    private void toLivePlayActivity(ChannelDataBean.DataBean item) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("data", item);
-        ActivityUtils.startActivity(bundle, LivePlayActivity.class);
-    }
-
-
-    private void dialog() {
-        Dialog dialog = new Dialog(this, R.style.wx_dialog);
-        View view = View.inflate(this, R.layout.dialog_commom, null);
-        TextView tvMessage = view.findViewById(R.id.tv_message);
-        tvMessage.setText("账号到期，请续费");
-        TextView tvClose = view.findViewById(R.id.tv_close);
-        tvClose.setText("续费");
-        tvClose.setOnClickListener(v -> {
-            if (AppConfig.pay_type.equals("1")){
-                ActivityUtils.startActivity(VipActivity.class);
-            }else {
-                ActivityUtils.startActivity(PayActivity.class);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode==RESULT_OK){
+            if (requestCode==1){
+                PayUtils.payDialog(this, R.mipmap.zb_pay_bg, "直播区", "", 1, AppContext.zbChargeList);
             }
-            dialog.dismiss();
-        });
-        dialog.setContentView(view);
-        dialog.show();
+        }
     }
 
     @Override

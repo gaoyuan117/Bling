@@ -5,6 +5,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="剩余观看时间：10s"
+            android:textColor="@color/main_color"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/layout"
             android:layout_width="wrap_content"
@@ -52,13 +62,13 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_marginTop="46dp"
-            android:id="@+id/img_collect"
-            android:padding="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:src="@mipmap/collect_false"/>
+            android:layout_marginTop="46dp"
+            android:padding="15dp"
+            android:src="@mipmap/collect_false"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_tips"
@@ -68,23 +78,21 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="12dp"
-            android:textColor="#fff"
+            android:background="@drawable/broder_ad"
+            android:paddingBottom="3dp"
             android:paddingLeft="6dp"
             android:paddingRight="6dp"
-            android:paddingBottom="3dp"
             android:paddingTop="3dp"
-            android:background="@drawable/broder_ad"
+            android:textColor="#fff"
             android:textSize="13sp" />
 
         <ImageView
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/tv_tips"
             android:id="@+id/imageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
-            />
+            android:layout_marginTop="32dp" />
 
         <ImageView
             android:id="@+id/loading_View"
@@ -103,26 +111,26 @@
             android:paddingTop="20dp">
 
             <ImageView
-                android:visibility="gone"
-                android:id="@+id/ijk_jubao"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/jubao" />
+                android:id="@+id/img_collect"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/collect_false"
+                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/ijk_guanbi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_alignParentRight="true"
                 android:src="@mipmap/guanbi" />
 
             <ImageView
-                android:visibility="gone"
                 android:id="@+id/ijk_pingbi"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_alignParentRight="true"
-                android:src="@mipmap/jinzhi" />
+                android:src="@mipmap/jinzhi"
+                android:visibility="gone" />
 
 
         </RelativeLayout>

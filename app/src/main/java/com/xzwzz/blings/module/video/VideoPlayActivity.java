@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -74,34 +75,26 @@ public class VideoPlayActivity extends BaseActivity {
                 textSplit = AppContext.textAdBean.getAv_ad().replaceAll("，", ",").split(",");
                 tips.setText(textSplit[0]);
 
-                textSplit = AppContext.textAdBean.getAv_gif().replaceAll("，", ",").split(",");
+                gifSplit = AppContext.textAdBean.getAv_gif().replaceAll("，", ",").split(",");
                 Glide.with(this).load(gifSplit[0]).into(gif);
             } else {
                 textSplit = AppContext.textAdBean.getCoin_ad().replaceAll("，", ",").split(",");
                 tips.setText(textSplit[0]);
 
-                textSplit = AppContext.textAdBean.getCoin_gif().replaceAll("，", ",").split(",");
+                gifSplit = AppContext.textAdBean.getCoin_gif().replaceAll("，", ",").split(",");
                 Glide.with(this).load(gifSplit[0]).into(gif);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
-
-        if (type.equals("diamond")) {
-            addViewNum();
-        }
-
+        addViewNum();
     }
 
     @SuppressLint("CheckResult")
     private void addViewNum() {
-        RetrofitClient.getInstance().createApi().addViewNum("Home.addvideonum", id)
+        RetrofitClient.getInstance().createApi().addViewNum("Home.addvideonum", id,type)
                 .compose(RxUtils.io_main())
-                .subscribe(new Consumer<HttpResult>() {
-                    @Override
-                    public void accept(HttpResult httpResult) throws Exception {
-
-                    }
+                .subscribe(httpResult -> {
                 });
     }
 

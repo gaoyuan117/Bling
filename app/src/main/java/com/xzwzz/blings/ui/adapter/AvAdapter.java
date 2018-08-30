@@ -9,6 +9,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.xzwzz.blings.R;
 import com.xzwzz.blings.bean.AvVideoListBean;
 import com.xzwzz.blings.bean.VideoListBean;
+import com.xzwzz.blings.utils.GlideUtils;
 
 import java.util.List;
 
@@ -25,8 +26,7 @@ public class AvAdapter extends BaseQuickAdapter<AvVideoListBean,BaseViewHolder>{
     @Override
     protected void convert(BaseViewHolder helper, AvVideoListBean item) {
         ImageView imageView = helper.getView(R.id.img_av);
-        Glide.with(mContext).load(item.getVideo_img()).into(imageView);
-
+        GlideUtils.glide(mContext,item.getVideo_img(),imageView);
         helper.setText(R.id.tv_title,item.getTitle());
         helper.setText(R.id.tv_time,item.getUptime());
     }
