@@ -21,15 +21,10 @@ import com.xzwzz.blings.api.http.RetrofitClient;
 import com.xzwzz.blings.api.http.RxUtils;
 import com.xzwzz.blings.base.BaseActivity;
 import com.xzwzz.blings.bean.BaseBean;
-import com.xzwzz.blings.bean.ConfigBean;
-import com.xzwzz.blings.bean.QqBean;
 import com.xzwzz.blings.bean.UserInfoBean;
-import com.xzwzz.blings.module.live.LiveChannelActivity;
 import com.xzwzz.blings.ui.adapter.MainFragmentAdapter;
 import com.xzwzz.blings.ui.fragment.HomeFragment;
-import com.xzwzz.blings.ui.fragment.MainFragment;
 import com.xzwzz.blings.ui.fragment.MineFragment;
-import com.xzwzz.blings.ui.fragment.PromotionFragment;
 import com.xzwzz.blings.ui.fragment.YunBoFragment;
 import com.xzwzz.blings.utils.DialogHelp;
 import com.xzwzz.blings.utils.LoginUtils;
@@ -38,9 +33,6 @@ import com.xzwzz.blings.widget.NoScrollViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import io.reactivex.functions.Consumer;
 
 public class MainActivity extends BaseActivity {
 

@@ -4,54 +4,37 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.xzwzz.blings.AppConfig;
 import com.xzwzz.blings.AppContext;
 import com.xzwzz.blings.R;
 import com.xzwzz.blings.api.http.BaseListObserver;
-import com.xzwzz.blings.api.http.BaseObjObserver;
 import com.xzwzz.blings.api.http.RetrofitClient;
 import com.xzwzz.blings.api.http.RxUtils;
 import com.xzwzz.blings.base.BaseActivity;
-import com.xzwzz.blings.bean.BaseBean;
-import com.xzwzz.blings.bean.MobileBean;
-import com.xzwzz.blings.bean.MoviesLinkListBean;
-import com.xzwzz.blings.bean.NovelTermBean;
-import com.xzwzz.blings.bean.NovieceBean;
 import com.xzwzz.blings.bean.PayDialogBean;
 import com.xzwzz.blings.bean.TextAdBean;
 import com.xzwzz.blings.bean.UserInfoBean;
 import com.xzwzz.blings.ui.adapter.ViewPagerAdapter;
 import com.xzwzz.blings.ui.fragment.AvFragment;
 import com.xzwzz.blings.ui.fragment.DiamondFragment;
-import com.xzwzz.blings.ui.fragment.GameFragment;
 import com.xzwzz.blings.ui.fragment.HomeFragment;
 import com.xzwzz.blings.ui.fragment.MineFragment;
-import com.xzwzz.blings.ui.fragment.YingFragment;
-import com.xzwzz.blings.ui.fragment.YunBoFragment;
 import com.xzwzz.blings.utils.DialogHelp;
-import com.xzwzz.blings.utils.LoginUtils;
 import com.xzwzz.blings.utils.UpdateManager;
 import com.xzwzz.blings.view.AlphaTabView;
 import com.xzwzz.blings.view.AlphaTabsIndicator;
 import com.xzwzz.blings.view.OnTabChangedListner;
 import com.xzwzz.blings.widget.NoScrollViewPager;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
-
-import io.reactivex.functions.Consumer;
 
 public class HomeActivity extends BaseActivity implements OnTabChangedListner {
 
