@@ -111,7 +111,6 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
         super.onResume();
         video();
         getFreeNum();
-
     }
 
     @Override

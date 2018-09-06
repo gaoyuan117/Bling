@@ -47,7 +47,6 @@ public class PromotionFragment extends BaseFragment {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         ImageView iv = new ImageView(mContext);
         iv.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        iv.setImageResource(R.mipmap.tuiguangzhengc);
         mAdapter.setFooterView(iv);
     }
 

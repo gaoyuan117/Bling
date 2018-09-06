@@ -86,10 +86,10 @@ public class MainFragment extends BaseFragment implements BaseQuickAdapter.OnIte
     public void initData() {
         ArrayList<CategoryBean> list = new ArrayList<>();
 //        list.add(new CategoryBean("直播专区", R.mipmap.ic_live));
-        list.add(new CategoryBean("VIP影视", R.mipmap.ic_live));
-        list.add(new CategoryBean("优选图片", R.mipmap.ic_wallper));
-        list.add(new CategoryBean("原创小说", R.mipmap.ic_book));
-        list.add(new CategoryBean("精彩视频", R.mipmap.ic_video));
+//        list.add(new CategoryBean("VIP影视", R.mipmap.ic));
+//        list.add(new CategoryBean("优选图片", R.mipmap.ic_wallper));
+//        list.add(new CategoryBean("原创小说", R.mipmap.ic_book));
+//        list.add(new CategoryBean("精彩视频", R.mipmap.ic_video));
         mAdapter = new CategoryAdapter(R.layout.item_category, list);
         mRecyclerMain.setAdapter(mAdapter);
         RetrofitClient.getInstance().createApi().getAd().compose(RxUtils.io_main())

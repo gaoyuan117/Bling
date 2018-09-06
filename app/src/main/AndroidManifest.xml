@@ -87,7 +87,6 @@
         <activity
             android:name=".ui.WebViewActivity"
             android:hardwareAccelerated="true" />
-        <activity android:name=".ui.ExperienceActivity" />
         <activity android:name=".ui.LiveModule2Activity" />
         <activity android:name=".module.live.LiveChannelActivity" />
         <activity

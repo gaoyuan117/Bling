@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:src="@mipmap/jingcaishipin"/>
+        />
 
     <ImageView
         android:id="@+id/img_novel"
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:src="@mipmap/yuanchuangiaoshuo"/>
+       />
 
 
 </LinearLayout>
