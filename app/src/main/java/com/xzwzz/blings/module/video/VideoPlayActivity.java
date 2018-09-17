@@ -22,6 +22,8 @@ import com.xzwzz.blings.widget.XzwzzPlayer;
 
 import cn.jzvd.JZVideoPlayer;
 import cn.jzvd.JZVideoPlayerStandard;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class VideoPlayActivity extends BaseActivity {
@@ -94,7 +96,26 @@ public class VideoPlayActivity extends BaseActivity {
     private void addViewNum() {
         RetrofitClient.getInstance().createApi().addViewNum("Home.addvideonum", id,type)
                 .compose(RxUtils.io_main())
-                .subscribe(httpResult -> {
+                .subscribe(new Observer<HttpResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult httpResult) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
                 });
     }
 

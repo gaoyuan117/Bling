@@ -36,6 +36,8 @@ import com.xzwzz.blings.utils.PayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.OnItemClickListener {
@@ -71,8 +73,8 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
         super.initView();
         String title = getIntent().getStringExtra("title");
         id = getIntent().getStringExtra("id");
-        if (title.length()>8){
-            title = title.substring(0,8);
+        if (title.length() > 8) {
+            title = title.substring(0, 8);
         }
         setToolbar(title, true);
 
@@ -115,6 +117,7 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
 
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+        if (detailBean == null || adBean == null) return;
         Intent intent = new Intent(this, AvDetailActivity.class);
         intent.putExtra("title", list.get(position).getTitle());
         intent.putExtra("id", list.get(position).getId());
@@ -131,7 +134,7 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
                         detailBean = bean;
                         GlideUtils.glide(AvDetailActivity.this, bean.getDetails().getVideo_img(), videoImg);
 
-                        GlideUtils.glide(mContext,bean.getDetails().getVideo_img(),videoImg);
+                        GlideUtils.glide(mContext, bean.getDetails().getVideo_img(), videoImg);
                         tvNum.setText(bean.getDetails().getWatch_num() + "");
                         tvTitle.setText(bean.getDetails().getTitle());
                         tvCount.setText(bean.getDetails().getCoin() + "");
@@ -168,21 +171,40 @@ public class AvDetailActivity extends BaseActivity implements BaseQuickAdapter.O
     private void getFreeNum() {
         RetrofitClient.getInstance().createApi().getfreenum("Home.getfreenum", AppContext.getInstance().getLoginUid(), "1")
                 .compose(RxUtils.io_main())
-                .subscribe(bean -> {
-                    if (bean.ret == 200) {
-                        if (bean.data.code == 0) {
-                            vip = true;
-                            layoutTips.setVisibility(View.VISIBLE);
-                        } else {
-                            vip = false;
-                            layoutTips.setVisibility(View.GONE);
+                .subscribe(new Observer<HttpResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult httpResult) {
+                        if (httpResult.ret == 200) {
+                            if (httpResult.data.code == 0) {
+                                vip = true;
+                                layoutTips.setVisibility(View.VISIBLE);
+                            } else {
+                                vip = false;
+                                layoutTips.setVisibility(View.GONE);
+                            }
                         }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }
 
 
     private void toActivity() {
+        if (detailBean == null || adBean == null) return;
         if (vip) {
             startActivity();
         } else {

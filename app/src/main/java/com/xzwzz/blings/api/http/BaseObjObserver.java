@@ -64,6 +64,7 @@ public abstract class BaseObjObserver<T> implements Observer<HttpResult<T>> {
         }
     }
 
+
     @Override
     public void onNext(HttpResult<T> value) {
         if (mProgressBar != null) {
@@ -132,6 +133,10 @@ public abstract class BaseObjObserver<T> implements Observer<HttpResult<T>> {
 //            progressDialog.setMessage(message);
 //            progressDialog.show();
 //        }
+
     }
+
+
+
 }
 

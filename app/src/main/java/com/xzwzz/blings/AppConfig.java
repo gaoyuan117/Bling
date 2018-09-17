@@ -19,7 +19,7 @@ public class AppConfig {
 
     public static  String INVITE_CODE = "";//内置邀请码
 
-    public static final String MAIN_URL = "http://bling.8eym3.cn/";
+    public static final String MAIN_URL = "http://chuangxunfeifan.com/";
 //        public static final String MAIN_URL = "http://yybs88.com/";
     //api地址
     public static final String MAIN_URL_API = MAIN_URL + "/api/public/";

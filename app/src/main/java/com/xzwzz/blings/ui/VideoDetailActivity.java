@@ -22,6 +22,7 @@ import com.xzwzz.blings.AppConfig;
 import com.xzwzz.blings.AppContext;
 import com.xzwzz.blings.R;
 import com.xzwzz.blings.api.http.BaseObjObserver;
+import com.xzwzz.blings.api.http.HttpResult;
 import com.xzwzz.blings.api.http.RetrofitClient;
 import com.xzwzz.blings.api.http.RxUtils;
 import com.xzwzz.blings.base.BaseActivity;
@@ -35,6 +36,9 @@ import com.xzwzz.blings.utils.PayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapter.OnItemClickListener {
 
@@ -108,7 +112,7 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
 
     @Override
     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-
+        if (detailBean == null || adBean == null) return;
         Intent intent = new Intent(this, VideoDetailActivity.class);
         intent.putExtra("title", list.get(position).getTitle());
         intent.putExtra("id", list.get(position).getId());
@@ -124,7 +128,7 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
                     @Override
                     protected void onHandleSuccess(VideoDetailBean bean) {
                         detailBean = bean;
-                        GlideUtils.glide(mContext,bean.getDetails().getImg_url(),videoImg);
+                        GlideUtils.glide(mContext, bean.getDetails().getImg_url(), videoImg);
                         tvNum.setText(bean.getDetails().getWatch_num() + "");
                         tvTitle.setText(bean.getDetails().getTitle());
                         tvCount.setText(bean.getDetails().getCoin() + "");
@@ -147,8 +151,8 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
                     @Override
                     protected void onHandleSuccess(DiamondAdBean bean) {
                         imgAd.setVisibility(View.VISIBLE);
-                        adBean = bean;
                         GlideUtils.glide(VideoDetailActivity.this, bean.getThumb(), imgAd);
+                        adBean = bean;
                     }
                 });
     }
@@ -164,22 +168,40 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
     private void getFreeNum() {
         RetrofitClient.getInstance().createApi().getfreenum("Home.getfreenum", AppContext.getInstance().getLoginUid(), "2")
                 .compose(RxUtils.io_main())
-                .subscribe(bean -> {
-                    if (bean.ret == 200) {
-                        if (bean.data.code == 0) {
-                            vip = true;
-                            layoutTips.setVisibility(View.VISIBLE);
-                        } else {
-                            vip = false;
-                            layoutTips.setVisibility(View.GONE);
+                .subscribe(new Observer<HttpResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
+                    }
+
+                    @Override
+                    public void onNext(HttpResult httpResult) {
+                        if (httpResult.ret == 200) {
+                            if (httpResult.data.code == 0) {
+                                vip = true;
+                                layoutTips.setVisibility(View.VISIBLE);
+                            } else {
+                                vip = false;
+                                layoutTips.setVisibility(View.GONE);
+                            }
                         }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }
 
 
     private void toActivity() {
+        if (detailBean == null || adBean == null) return;
         if (vip) {
             startActivity();
         } else {
@@ -216,15 +238,33 @@ public class VideoDetailActivity extends BaseActivity implements BaseQuickAdapte
     private void buy() {
         RetrofitClient.getInstance().createApi().buyVideo("Home.buyvideo", AppContext.getInstance().getLoginUid(), detailBean.getDetails().getId())
                 .compose(RxUtils.io_main())
-                .subscribe(httpResult -> {
-                    if (httpResult.ret == 200) {
-                        if (httpResult.data.code == 0) {
-                            ToastUtils.showShort("购买成功");
-                            startActivity();
-                            video();
-                        } else {
-                            PayUtils.payDialog(VideoDetailActivity.this, R.mipmap.zb_pay_bg, "钻石区", "新用户免费观看5部影片", 3, AppContext.zsChargeList);
+                .subscribe(new Observer<HttpResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(HttpResult httpResult) {
+                        if (httpResult.ret == 200) {
+                            if (httpResult.data.code == 0) {
+                                ToastUtils.showShort("购买成功");
+                                startActivity();
+                                video();
+                            } else {
+                                PayUtils.payDialog(VideoDetailActivity.this, R.mipmap.zb_pay_bg, "钻石区", "新用户免费观看5部影片", 3, AppContext.zsChargeList);
+                            }
                         }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }
