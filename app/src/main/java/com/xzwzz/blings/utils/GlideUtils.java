@@ -5,6 +5,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.xzwzz.blings.AppConfig;
+import com.xzwzz.blings.AppContext;
 
 public class GlideUtils {
 
@@ -17,6 +18,6 @@ public class GlideUtils {
         } else {
             img = AppConfig.MAIN_URL + url;
         }
-        Glide.with(context).load(img).into(imageView);
+        Glide.with(AppContext.getInstance()).load(img).into(imageView);
     }
 }
